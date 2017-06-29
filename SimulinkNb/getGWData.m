@@ -1,15 +1,15 @@
-function data = getGWData(chanList, start, duration)
+function data = getGWData(chanList, start, duration, ffl)
 %GETGWDATA  Fetch data from NDS server or Virgo frames
 %
 %   Syntax:
 %
-%   data = getGWData(chanList, start, duration)
+%   data = getGWData(chanList, start, duration, ffl)
 %
 %   Description:
 %
 %   getGWData(CHANLIST, START, DURATION) uses the GWData library to obtain
 %   data from an NDS1 or NDS2 server.  Or it calls getVirgoData for V1
-%   channels.
+%   channels, if ffl provided uses that otherwise defaults to raw.
 %
 %   See also: GWDATA
 
@@ -18,7 +18,11 @@ virgoChannels = ~cellfun(@isempty, regexp(chanList, '^V1:.*'));
 if all(virgoChannels)
   % if all channels are from Virgo use getVirgoData
   % FIXME: hard-coded using raw_full frames
-  data = getVirgoData(chanList, 'raw_full', start, duration);
+  if nargin < 4
+    data = getVirgoData(chanList, 'raw', start, duration);
+  else
+    data = getVirgoData(chanList, ffl, start, duration);
+  end
 else
   % use NDS for all channels if any LIGO channels is requested
   gwd = GWData();
