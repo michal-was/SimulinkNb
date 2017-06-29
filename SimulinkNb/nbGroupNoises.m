@@ -1,4 +1,4 @@
-function [ nb ] = nbGroupNoises(mdl, noises, sys)
+function [ nb ] = nbGroupNoises(mdl, noises, sys, start)
 %NBGROUPNOISES  Organizes the noises array returned by NBFROMSIMULINK
 %   [ nb ] = NBGROUPNOISES(mdl, noises, sys)
 %
@@ -44,7 +44,11 @@ disp(['NbNoiseCal block is ' nbNoiseCal ' (DOF ' ...
 group = groupAtLevel(noises(2:end), 1, unit);
 
 nb = NoiseModel(group);
-nb.title = [dof ' NoiseBudget'];
+if nargin > 3
+  nb.title = [dof ' NoiseBudget; ' gps2str(start)];
+else
+  nb.title = [dof ' NoiseBudget']
+end
 nb.unit = unit;
 
 if ~isempty(noises{1}.asd)
