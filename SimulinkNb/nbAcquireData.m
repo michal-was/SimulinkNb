@@ -58,7 +58,7 @@ chanList = sort(unique(chanList));
 
 %% Read data
 
-data = cacheFunction(@getGWData, chanList, start, duration);
+data = getGWData(chanList, start, duration, 'raw');
 
 %% Compute ASDs 
 
@@ -83,6 +83,9 @@ end
 % updateNoises() is a local function defined below
 nb = updateNoises(sys, nb, noisesByChan);
 
+% add time to budget title
+%nb.title = [nb.title '; ' gps2str(start)];
+
 end
 
 function [ asd ] = defaultAsd(data, Fs, freq)
@@ -99,7 +102,12 @@ if NFFT > numel(data)
         num2str(numel(data)/Fs) ' seconds of data were requested']);
 end
 [psd, f] = pwelch(data, hann(NFFT), NFFT/2, NFFT, Fs);
-asd = interp1(f, sqrt(psd), freq, 'nearest', 0);
+% KLUDGE way of doing RMS of the ASD over the variable size bins defined
+% by freq
+fineF = [freq'; f(f>min(freq) & f<max(freq))];
+psdFine = interp1(f, psd, fineF, 'nearest', 0);
+posFine = interp1(freq, 1:length(freq), fineF, 'nearest', 0);
+asd = sqrt(accumarray(posFine,psdFine)./accumarray(posFine,1))';
 
 end
 
