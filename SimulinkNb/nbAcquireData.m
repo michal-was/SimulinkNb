@@ -105,9 +105,9 @@ end
 % KLUDGE way of doing RMS of the ASD over the variable size bins defined
 % by freq
 fineF = [freq'; f(f>min(freq) & f<max(freq))];
-psdFine = interp1(f, psd, fineF, 'nearest', 0);
+psdFine = interp1(f, 1./psd, fineF, 'nearest', 0);
 posFine = interp1(freq, 1:length(freq), fineF, 'nearest', 0);
-asd = sqrt(accumarray(posFine,psdFine)./accumarray(posFine,1))';
+asd = 1./sqrt(accumarray(posFine,psdFine)./accumarray(posFine,1))';
 
 end
 
