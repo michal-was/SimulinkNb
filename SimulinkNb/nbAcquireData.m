@@ -41,6 +41,7 @@ end
 % Parse parameter-value pairs in varargin
 parser = inputParser();
 parser.addParamValue('asdMethod', @defaultAsd, @(x) ischar(x) || isa(x, 'function_handle'));
+parser.addParamValue('ffl', 'raw', @(x) ischar(x));
 parser.parse(varargin{:});
 opt = parser.Results;
 
@@ -58,7 +59,7 @@ chanList = sort(unique(chanList));
 
 %% Read data
 
-data = getGWData(chanList, start, duration, 'raw');
+data = getGWData(chanList, start, duration, opt.ffl);
 
 %% Compute ASDs 
 
